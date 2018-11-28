@@ -21,7 +21,11 @@
         </activity>
         <activity android:name=".NewsActivity" />
         <activity android:name=".PostActivity" />
-        <activity android:name=".ReportActivity"></activity>
+        <activity android:name=".ReportActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".NewsActivity" />
+        </activity>
     </application>
 
 </manifest>

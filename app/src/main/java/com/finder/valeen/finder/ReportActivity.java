@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.support.v7.widget.Toolbar;
 
 import com.bumptech.glide.Glide;
 import com.google.firebase.database.DataSnapshot;
@@ -31,23 +32,26 @@ public class ReportActivity extends AppCompatActivity  implements View.OnClickLi
      @BindView(R.id.txtSite)EditText edit;
      @BindView(R.id.review) TextView txtFinder;
      @BindView(R.id.btnPost) Button btnPost;
+     @BindView(R.id.toolbar) Toolbar toolbar;
      private String id;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_report);
         ButterKnife.bind(this);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
     @Override
     public void onStart(){
         super.onStart();
+        Intent intent=getIntent();
         Glide.with(this)
                 .asBitmap()
-                .load(User.Url)
+                .load(intent.getCharSequenceExtra("url"))
                 .into(circleImageView);
-        txtDescription.setText(User.Description);
-        id= User.Time;
-        databaseReference=FirebaseDatabase.getInstance().getReference().child(id).child("message");
+        txtDescription.setText(intent.getCharSequenceExtra("description"));
+        databaseReference=FirebaseDatabase.getInstance().getReference().child((String) intent.getCharSequenceExtra("time")).child("message");
         btnPost.setOnClickListener(this);
         getLastItem();
     }

@@ -40,24 +40,28 @@ public class MessagesAdapter extends RecyclerView.Adapter<ViewHolder> implements
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup,int i) {
         View view= LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.news_item,viewGroup,false);
-        return new ViewHolder(view,Message.messages.get(i).getUrl(),Message.messages.get(i).getMessage(),Message.messages.get(i).getTime(),context);
+        return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
+        viewHolder.context=context;
+        viewHolder.fullMessage=messages.get(i).getMessage();
+        viewHolder.url=messages.get(i).getUrl();
         Glide.with(context)
                 .asBitmap()
                 .load(messages.get(i).getUrl())
                 .into(viewHolder.circleImageView);
         String message;
-        if(messages.get(i).getMessage().length()>50){
-            message=messages.get(i).getMessage().substring(0,50).concat("...");
+        if(messages.get(i).getMessage().length()>30){
+            message=messages.get(i).getMessage().substring(0,30).concat("...");
         }
         else{
             message=messages.get(i).getMessage();
         }
         viewHolder.txtMessage.setText(message);
         viewHolder.txtDate.setText(messages.get(i).getDate());
+        viewHolder.data=Long.toString(messages.get(i).getTime());
     }
     @Override
     public int getItemCount() {
@@ -80,24 +84,19 @@ public class MessagesAdapter extends RecyclerView.Adapter<ViewHolder> implements
 }
 
 
-class  ViewHolder extends  RecyclerView.ViewHolder implements ItemMovement {
-     CircleImageView circleImageView;
+class  ViewHolder extends  RecyclerView.ViewHolder implements ItemMovement,View.OnClickListener {
+    CircleImageView circleImageView;
     TextView txtMessage;
     TextView txtDate;
+    String data;
+    String url;
     View view;
-    ViewHolder(View view, final String url, final String description, final long i, final Context context){
+    Context context;
+    String fullMessage;
+    ViewHolder(View view){
         super(view);
         this.view=view;
-        this.view.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent=new Intent(context, ReportActivity.class);
-                User.Url=url;
-                User.Description=description;
-                User.Time=Long.toString(i);
-                context.startActivity(intent);
-            }
-        });
+        this.view.setOnClickListener(this);
         circleImageView=(CircleImageView) view.findViewById(R.id.imgPic);
         txtMessage=(TextView) view.findViewById(R.id.txtMessage);
         txtDate=(TextView) view.findViewById(R.id.txtDate);
@@ -117,5 +116,16 @@ class  ViewHolder extends  RecyclerView.ViewHolder implements ItemMovement {
                 .alpha(1f)
                 .scaleX(1f)
                 .scaleY(1f);
+    }
+
+    @Override
+    public void onClick(View v) {
+         if(v.equals(this.view)){
+             Intent intent=new Intent(context,ReportActivity.class);
+             intent.putExtra("url",url);
+             intent.putExtra("description",fullMessage);
+             intent.putExtra("time",data);
+             context.startActivity(intent);
+         }
     }
 }
